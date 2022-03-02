@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Launch script for astrabot, makes restarting actually work
+
 import os
 import subprocess
 
