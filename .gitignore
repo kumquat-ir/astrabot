@@ -1,2 +1,8 @@
 # has bot token in it, look at config-example.json
 config.json
+
+# probably shouldnt exist, but just in case
+bot-restart
+
+# textboxer resource directory
+tb-resources
