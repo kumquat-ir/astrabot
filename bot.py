@@ -11,9 +11,10 @@ from discord.ext import commands
 from textboxer import textboxer
 
 
+textboxer.resource_root = Path("tb-resources")
 helpdb = {
     "echo": "makes the bot say <text>",
-    "tb": "hoo boy"
+    "tb": textboxer.gen_help()
 }
 usagedb = {
     "echo": "<text>",
@@ -25,13 +26,13 @@ briefdb = {
 }
 
 
-# intents = discord.Intents.default()
-# intents.
+intents = discord.Intents.default()
+intents.typing = False
+# intents.message_content = True
 config_file = Path("config.json").open()
 config = json.load(config_file)
 config_file.close()
-bot = commands.Bot(command_prefix="a> ")
-textboxer.resource_root = Path("tb-resources")
+bot = commands.Bot(command_prefix="a> ", intents=intents)
 
 
 def command_with_help(func):
@@ -39,15 +40,11 @@ def command_with_help(func):
     return bot.command(help=helpdb[fname], usage=usagedb[fname], brief=briefdb[fname])(func)
 
 
-async def require_admin(id: int, channel) -> bool:
-    if id not in config["admins"]:
-        await channel.send("You do not have permission to do that.")
+async def require_admin(cxt: commands.Context) -> bool:
+    if cxt.message.author.id not in config["admins"]:
+        await cxt.send("You do not have permission to do that.")
         return False
     return True
-
-
-async def require_admin_cxt(cxt: commands.Context) -> bool:
-    return await require_admin(cxt.message.author.id, cxt.message.channel)
 
 
 @command_with_help
@@ -57,14 +54,14 @@ async def echo(cxt: commands.Context, arg: str):
 
 @bot.command(hidden=True)
 async def quit(cxt: commands.Context):
-    if await require_admin_cxt(cxt):
+    if await require_admin(cxt):
         await cxt.send("adios.")
         await bot.close()
 
 
 @bot.command(hidden=True)
 async def restart(cxt: commands.Context):
-    if await require_admin_cxt(cxt):
+    if await require_admin(cxt):
         await cxt.send("restarting!")
         rsfile = open("bot-restart", "w")
         rsfile.write("if this file exists, the bot will be restarted")
@@ -74,10 +71,7 @@ async def restart(cxt: commands.Context):
 
 @command_with_help
 async def tb(cxt: commands.Context, *args: str):
-    fullstr = ""
-    for part in args:
-        fullstr += part + " "
-    textboxer.parsestr(fullstr, out="tb-tmp.png")
+    textboxer.parsestr("", out="tb-tmp.png", presplit=list(args))
     tb_img = open("tb-tmp.png", "rb")
     await cxt.send(file=discord.File(tb_img, "generated textbox.png"))
     tb_img.close()

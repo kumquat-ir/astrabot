@@ -1,3 +1,4 @@
 {
-  "token": "discord bot token goes here"
+  "token": "discord bot token goes here",
+  "admins": ["user ids of users to give bot admin, as integers, not strings!"]
 }

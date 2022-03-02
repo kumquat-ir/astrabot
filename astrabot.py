@@ -7,8 +7,10 @@ from pathlib import Path
 
 
 if __name__ == "__main__":
-    subprocess.run("./bot.py")
+    print("astrabot is starting!")
+    botpath = Path("bot.py").resolve()
+    subprocess.run(botpath)
     while Path("bot-restart").exists():
-        print("bot is restarting!")
+        print("astrabot is restarting!")
         os.remove("bot-restart")
-        subprocess.run("./bot.py")
+        subprocess.run(botpath)
