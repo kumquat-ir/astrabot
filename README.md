@@ -5,10 +5,10 @@ Currently just does textboxer-related stuff
 
 ## Requirements
 Python 3.10
-py-cord
+py-cord  
 Pillow (for textboxer)
 
-Full textboxer resource directory at `tb-resources`
+Full textboxer resource directory at `tb-resources`  
 `config.json`, use `config-example.json` as reference
 
 ## textboxer interface
