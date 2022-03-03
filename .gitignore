@@ -4,6 +4,7 @@ config.json
 # these probably shouldnt exist, but just in case
 bot-restart
 tb-tmp.png
+alias-tmp
 
 # textboxer resource directory
 tb-resources
