@@ -17,17 +17,20 @@ helpdb = {
     "echo": "makes the bot say <text>",
     "tb": textboxer.gen_help(),
     "tb_alias": """Searches the textbox image alias database to find what image names you can use for a given style.
-See "a> help tb" for a list of styles"""
+See "a> help tb" for a list of styles""",
+    "tb_imageget": "Attempts to get an image from its name.\nSee \"a> help tb\" for a list of styles"
 }
 usagedb = {
     "echo": "<text>",
     "tb": "[style] [f:<flag>] <style options...>",
-    "tb_alias": "<style> <search term>"
+    "tb_alias": "<style> <search term>",
+    "tb_imageget": "<style> <image name>"
 }
 briefdb = {
     "echo": "make the bot say something",
     "tb": "create a textbox image",
-    "tb_alias": "what images you can use for textboxes"
+    "tb_alias": "search for images you can use for textboxes",
+    "tb_imageget": "get an image from its name"
 }
 
 
@@ -109,7 +112,18 @@ async def tb(cxt: commands.Context, *args: str):
     os.remove("tb-tmp.png")
 
 
-@command_with_help(bot, name="tb-images", aliases=["tb-alias"])
+@tb.error
+async def tb_error(cxt: commands.Context, error):
+    await cxt.send("something went wrong! check that all images exist and you have not skipped any style options")
+
+
+@bot.group(name="tb-images", aliases=["tb-alias"], brief="stuff for images used in textboxes")
+async def tb_images(cxt: commands.Context):
+    if cxt.invoked_subcommand is None:
+        await cxt.send("subcommand " + str(cxt.subcommand_passed) + " does not exist")
+
+
+@command_with_help(tb_images, name="search")
 async def tb_alias(cxt: commands.Context, style: str, search: str):
     alias_tmp = open("alias-tmp", "w+")
     print(textboxer.find_aliases(style, search), file=alias_tmp)
@@ -120,12 +134,34 @@ async def tb_alias(cxt: commands.Context, style: str, search: str):
     os.remove("alias-tmp")
 
 
+@command_with_help(tb_images, name="get")
+async def tb_imageget(cxt: commands.Context, style: str, image: str):
+    imagefile = textboxer.get_image(style, image).open("rb")
+    await cxt.send(image, file=discord.File(imagefile))
+    imagefile.close()
+
+
+@tb_imageget.error
+async def imageget_error(cxt: commands.Context, error):
+    if isinstance(error, commands.CommandInvokeError) and isinstance(error.original, AttributeError):
+        await cxt.send("could not get image!")
+
+
 @bot.event
 async def on_ready():
     global initialized_status
     if not initialized_status:
         initialized_status = True
         await bot.change_presence(status=discord.Status.idle)
+
+
+@bot.event
+async def on_command_error(cxt: commands.Context, error):
+    if isinstance(error, commands.UserInputError):
+        await cxt.send("i only got the first part of that")
+    elif isinstance(error, commands.CommandNotFound):
+        await cxt.send("what does any of that even mean???")
+    raise error
 
 
 bot.run(config["token"])
