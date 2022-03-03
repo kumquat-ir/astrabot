@@ -136,8 +136,9 @@ async def tb_alias(cxt: commands.Context, style: str, search: str):
 
 @command_with_help(tb_images, name="get")
 async def tb_imageget(cxt: commands.Context, style: str, image: str):
-    imagefile = textboxer.get_image(style, image).open("rb")
-    await cxt.send(image, file=discord.File(imagefile))
+    imagepath = textboxer.get_image(style, image)
+    imagefile = imagepath.open("rb")
+    await cxt.send(image, file=discord.File(imagefile, filename=image + imagepath.suffix))
     imagefile.close()
 
 
