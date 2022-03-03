@@ -4,7 +4,7 @@ A Discord bot that I made mainly to use [textboxer](https://github.com/kumquat-i
 Currently just does textboxer-related stuff
 
 ## Requirements
-Python 3.10
+Python 3.10  
 py-cord  
 Pillow (for textboxer)
 
