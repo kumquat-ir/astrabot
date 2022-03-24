@@ -16,3 +16,4 @@ if __name__ == "__main__":
         print("astrabot is restarting!")
         os.remove("bot-restart")
         subprocess.run(botpath)
+    print("astrabot has stopped!")

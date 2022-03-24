@@ -5,7 +5,7 @@ Currently just does textboxer-related stuff
 
 ## Requirements
 Python 3.10  
-py-cord  
+discord.py (it's back!)  
 Pillow (for textboxer)
 
 Full textboxer resource directory at `tb-resources`  

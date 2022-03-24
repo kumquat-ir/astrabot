@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import os
+
+import aiohttp
 import discord
 import json
 import logging
@@ -105,11 +107,25 @@ async def _setstatus(text: str):
 
 @command_with_help(bot, aliases=["textbox"])
 async def tb(cxt: commands.Context, *args: str):
+    if "!ATTACHED!" in args and len(cxt.message.attachments) > 0:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(cxt.message.attachments[0].url) as rq:
+                if rq.status == 200:
+                    img = await rq.read()
+                    imgpath = Path("tb-attached").resolve()
+                    imgfile = imgpath.open("wb")
+                    imgfile.write(img)
+                    imgfile.close()
+                    args = list(args)
+                    args[args.index("!ATTACHED!")] = str(imgpath)
+                    textboxer.resolve_next_with_path()
     textboxer.parsestr("", out="tb-tmp.png", presplit=list(args))
     tb_img = open("tb-tmp.png", "rb")
     await cxt.send(file=discord.File(tb_img, "generated textbox.png"))
     tb_img.close()
     os.remove("tb-tmp.png")
+    if Path("tb-attached").exists():
+        os.remove("tb-attached")
 
 
 @tb.error

@@ -5,6 +5,10 @@ config.json
 bot-restart
 tb-tmp.png
 alias-tmp
+tb-attached
 
 # textboxer resource directory
 tb-resources
+
+# logfile from my autostart script
+log
